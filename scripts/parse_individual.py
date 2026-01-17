@@ -1,15 +1,16 @@
 import os
-import csv
+import json
 from bs4 import BeautifulSoup
 
-def parse_club_details(folder_path):
-    all_club_details = []
+def parse_club_details_to_json_map(folder_path):
+    all_clubs_map = {}
+    club_id = 1  # Starting the numerical key
 
     if not os.path.exists(folder_path):
         print(f"Error: Folder '{folder_path}' not found.")
         return
 
-    # Iterate through all saved .html files
+    # Loop through the individual HTML files
     for filename in sorted(os.listdir(folder_path)):
         if filename.endswith(".html"):
             file_path = os.path.join(folder_path, filename)
@@ -19,51 +20,51 @@ def parse_club_details(folder_path):
 
                 # --- 1. Extract Logo URL ---
                 logo_box = soup.find(class_="logo-box")
-                logo_url = "N/A"
+                logo_url = None
                 if logo_box:
                     img_tag = logo_box.find("img")
                     if img_tag and img_tag.get("src"):
                         logo_url = img_tag.get("src")
 
-                # --- 2. Extract Instagram Display Name ---
-                # Targeting the 'display-name' class specifically
+                # --- 2. Extract Instagram Handle AND Link ---
                 insta_tag = soup.find(class_="display-name")
-                instagram_handle = insta_tag.get_text(strip=True) if insta_tag else "N/A"
+                instagram_handle = None
+                instagram_url = None
+                
+                if insta_tag:
+                    instagram_handle = insta_tag.get_text(strip=True)
+                    # Find the <a> tag that wraps the display-name
+                    parent_link = insta_tag.find_parent("a")
+                    if parent_link:
+                        instagram_url = parent_link.get("href")
 
                 # --- 3. Extract Description ---
                 desc_section = soup.find(class_="open-section-wrap")
-                description = "N/A"
+                description = None
                 if desc_section:
-                    # get_text(separator=" ") preserves spacing between paragraphs
                     description = desc_section.get_text(separator=" ", strip=True)
 
-                # Store the data
-                all_club_details.append({
-                    "Club Name": filename.replace(".html", ""),
-                    "Logo URL": logo_url,
-                    "Instagram": instagram_handle,
-                    "Description": description
-                })
+                # Build the club object
+                club_data = {
+                    "club_name": filename.replace(".html", ""),
+                    "logo_url": logo_url,
+                    "instagram_handle": instagram_handle,
+                    "instagram_url": instagram_url,
+                    "description": description
+                }
 
-            print(f"Parsed details for: {filename}")
+                # Add to the map using the unique numerical key
+                all_clubs_map[str(club_id)] = club_data
+                print(f"Processed [{club_id}]: {club_data['club_name']}")
+                
+                club_id += 1
 
-    save_to_csv(all_club_details)
-
-def save_to_csv(data):
-    if not data:
-        print("No data found.")
-        return
-
-    output_file = "ams_clubs_detailed_info.csv"
-    keys = data[0].keys()
-
-    with open(output_file, "w", newline="", encoding="utf-8") as f:
-        dict_writer = csv.DictWriter(f, fieldnames=keys)
-        dict_writer.writeheader()
-        dict_writer.writerows(data)
+    # Save to JSON file as a map
+    output_file = "ams_clubs_data.json"
+    with open(output_file, "w", encoding="utf-8") as json_file:
+        json.dump(all_clubs_map, json_file, indent=4, ensure_ascii=False)
     
-    print(f"\nSuccess! Detailed data for {len(data)} clubs saved to '{output_file}'")
+    print(f"\nSuccess! Generated {len(all_clubs_map)} club entries in '{output_file}'")
 
 if __name__ == "__main__":
-    # Ensure this matches the folder where your individual club HTMLs are stored
-    parse_club_details("individual_club_pages")
+    parse_club_details_to_json_map("individual_club_pages")
