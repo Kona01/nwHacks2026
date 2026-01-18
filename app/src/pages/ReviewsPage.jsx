@@ -116,7 +116,7 @@ const ReviewsPage = () => {
                     ))}
                   </div>
                   <span className="text-xs text-[#6EC4E8] font-bold tracking-widest uppercase">
-                    {new Date(rev.date).toLocaleDateString()}
+                    {new Date(rev.date_created).toLocaleDateString()}
                   </span>
                 </div>
                 <p className="text-gray-100 leading-relaxed italic">"{rev.comment || rev.text}"</p>
