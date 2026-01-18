@@ -55,5 +55,17 @@ def add_review(club_id):
     finally:
         conn.close()
 
+# 4. GET 50 Random Clubs
+@app.route('/api/clubs/random', methods=['GET'])
+def get_random_clubs():
+    conn = get_db_connection()
+    # Using SQLite's RANDOM() function to shuffle and LIMIT to get 50
+    random_clubs = conn.execute(
+        'SELECT * FROM clubs ORDER BY RANDOM() LIMIT 50'
+    ).fetchall()
+    conn.close()
+    
+    return jsonify([dict(row) for row in random_clubs])
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

@@ -18,7 +18,7 @@ const RootLayout = () => {
     <>
       <Navbar />
       <div className="layout-container">
-        <main className="pt-16 h-screen overflow-hidden">
+        <main className="pt-16 h-screen">
           <Outlet />
         </main>
       </div>
