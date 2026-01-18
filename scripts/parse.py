@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 
 def extract_clean_club_data(folder_path):
     all_clubs = []
+    club_id = 1
 
     if not os.path.exists(folder_path):
         print(f"Error: Folder '{folder_path}' not found.")
@@ -31,7 +32,8 @@ def extract_clean_club_data(folder_path):
                     
                     if h2_tag:
                         name = h2_tag.get_text(strip=True)
-                        all_clubs.append({"Name": name, "Link": link})
+                        all_clubs.append({"Name": name, "Link": link, "ID": club_id})
+                        club_id += 1
 
             print(f"Parsed: {filename}")
 
@@ -42,7 +44,7 @@ def save_to_csv(data):
         print("No data extracted.")
         return
 
-    output_file = "ams_clubs_cleaned.csv"
+    output_file = "ams_clubs_list.csv"
     keys = data[0].keys()
     
     with open(output_file, "w", newline="", encoding="utf-8") as f:
