@@ -29,7 +29,7 @@ const LoadingSpinner = () => (
 );
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState([{ role: 'model', text: 'Hello! Ask me anything about your project.' }]);
+  const [messages, setMessages] = useState([{ role: 'model', text: 'Hello! Ask me anything about clubs at UBC.' }]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
