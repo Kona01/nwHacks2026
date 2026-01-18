@@ -26,20 +26,7 @@ const ReviewsPage = () => {
   }, [clubId]);
 
   // Initial mock reviews (In a real app, fetch these from your SQLite DB)
-  const [reviews, setReviews] = useState([
-    {
-      id: 1,
-      rating: 5,
-      text: "Great experience! Learned a lot about social impact consulting.",
-      date: "Oct 12, 2025"
-    },
-    {
-      id: 2,
-      rating: 4,
-      text: "Solid club with good networking opportunities.",
-      date: "Sep 28, 2025"
-    }
-  ]);
+  const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
   fetch(`http://localhost:5000/api/club/${clubId}/reviews`)
@@ -90,7 +77,7 @@ const ReviewsPage = () => {
       {/* Club Card */}
       <div className="max-w-2xl w-full bg-white rounded-xl shadow-sm p-6 border border-gray-200">
         <div className="flex items-center gap-6">
-          <img src={club.logo} alt="Logo" className="w-24 h-24 rounded-full border shadow-sm"/>
+          <img src={club.logo_url} alt="Logo" className="w-24 h-24 rounded-full border shadow-sm"/>
           <div>
             <h1 className="text-2xl font-bold text-gray-800">{club.name}</h1>
             <p className="text-gray-600 mt-2 text-sm">{club.description}</p>
