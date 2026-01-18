@@ -1,0 +1,23 @@
+@keyframes pulse-once {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.animate-pulse-once {
+    animation: pulse-once 0.6s ease-in-out;
+}
+
+.club-card-shadow {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+.club-card-shadow:hover {
+    box-shadow: 0 12px 40px rgba(110, 196, 232, 0.4);
+}
