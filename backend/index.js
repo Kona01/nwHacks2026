@@ -21,7 +21,7 @@ app.post('/api/chat', async (req, res) => {
     // 2. In the new SDK, use 'ai.models.generateContent' directly
     // Or use 'ai.chats.create' for stateful conversations
     const response = await ai.models.generateContent({
-      model: "gemini-1.5-flash", 
+      model: "gemini-2.0-flash", 
       contents: [{ role: 'user', parts: [{ text: message }] }]
     });
 
