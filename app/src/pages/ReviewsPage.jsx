@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import InstagramButton from '../components/InstagramButton';
 
 const ReviewsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -84,6 +85,10 @@ const ReviewsPage = () => {
             />
         </div>
         <h1 className="text-4xl font-bold mb-3 drop-shadow-md">{club.name}</h1>
+        <InstagramButton
+          handle={club.instagram_handle} 
+          url={club.instagram_url} 
+        />
         <p className="text-[#E0E0E0] max-w-2xl mx-auto font-light leading-relaxed">
             {club.description || "A featured organization at the University of British Columbia."}
         </p>
