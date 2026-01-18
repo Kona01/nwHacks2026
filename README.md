@@ -26,7 +26,8 @@ npm run dev
 ```
 
 
-*The frontend will typically run at `http://localhost:5173`.*
+*The frontend will typically run at `http://localhost:3014`.*
+
 2. **Backend (Node.js)**
 ```bash
 cd backend
@@ -37,7 +38,8 @@ npm run dev
 ```
 
 
-*The backend server will typically run at `http://localhost:3000` (or your configured port).*
+*The backend server will typically run at `http://localhost:4999` (or your configured port).*
+
 3. **Database API (Python)**
 ```bash
 cd backend
