@@ -67,5 +67,20 @@ def get_random_clubs():
     
     return jsonify([dict(row) for row in random_clubs])
 
+@app.route('/api/clubs/random-id', methods=['GET'])
+def get_random_club_id():
+    conn = get_db_connection()
+    # Select only the 'id' column, shuffle, and take the first one
+    result = conn.execute(
+        'SELECT id FROM clubs ORDER BY RANDOM() LIMIT 1'
+    ).fetchone()
+    conn.close()
+    
+    if result:
+        # result is a Row object, convert to dict or access by index
+        return jsonify({"id": result['id']})
+    else:
+        return jsonify({"error": "No clubs found"}), 404
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
