@@ -53,41 +53,42 @@ python api.py
 
 ---
 
-## ✨ Features
+## Inspiration
 
-* **Intelligent Club Assistant:** A chatbot powered by the **Gemini API** that takes natural language interests (e.g., "I like outdoor sports and meeting people") and suggests the most relevant UBC clubs.
-* **Dynamic Homepage:** A curated, randomized selection of clubs is presented every time you visit, encouraging serendipitous discovery.
-* **Community Reviews:** Integrated browsing of club reviews, allowing students to see authentic feedback from current members.
-* **Live Data:** Uses a custom Python-based pipeline to ensure club information is extracted directly from official AMS sources.
+The most common piece of advice for any student looking to make new connections is to "join a club." But with over 400 student-run clubs at UBC, it can be hard to find the right one. After four years here, we're still learning about new clubs, and we may have liked to join some of them sooner, if only we knew they existed. So, we decided to create a new avenue for club discovery: the UBC Club Finder.
 
----
+## What it does
 
-## 🛠️ How We Built It
+The UBC Club Finder makes it easy to learn about all of the clubs offered, with several discovery strategies:
+- A randomized selection of clubs are presented every time you load the home page.
+- Chat with the Club Assistant to get recommendations based on a general interest.
+- Search for specific clubs and sort by average rating.
+- Browse club reviews to see what other people have to say.
 
-The project is built using a modern full-stack architecture:
+You can also leave your own review on clubs, to help other students discover them!
 
-* **Frontend:** React with **Vite** for a fast development experience and **Tailwind CSS** for responsive styling.
-* **Backend:** A **Node.js** server manages API requests and handles the logic for the Gemini API integration.
-* **Data Layer:** A **Python** script extracts data from the AMS clubs directory, which is then served via a lightweight **Flask (api.py)** interface to the main application.
-* **AI Integration:** We utilized the **Gemini API** for sophisticated recommendation logic, enabling users to find clubs based on "vibes" and interests rather than just keywords.
+## How we built it
 
----
+We used multiple Python scripts with Selenium to extract data from the AMS clubs directory. Then, we took the relevant club information and injected it our Gemini-powered chat assistant for context. We extended our app by integrating an SQL database for rating and reviewing clubs, and built out a React frontend for our project.
 
-## 🧠 Challenges & Learning
+## Challenges we ran into
 
-### Challenges we ran into
+Data Consistency: Scraping and processing the AMS clubs directory was tricky due to inconsistent formatting across different club pages, and important features like a description and Instagram link not being present on each one. We had to make a robust Python script to process the different pages as consistently as possible, and not cause an error if any of the information we were looking for was missing.
 
-* **Data Scrapping & Formatting:** The AMS clubs directory is inconsistent. We had to build a robust Python cleaning script to handle varied club descriptions and ensure the AI had high-quality data.
-* **AI Context Management:** Ensuring the Gemini API only recommended clubs that actually exist within our dataset required strict prompt engineering and data validation.
+Prompt Engineering: We had to ensure the model stayed strictly within the context of the 400+ clubs we provided. Additionally, we need to provide additional relevant club context without blowing up the context window with 120,000 tokens from all club data. This required thoughtful planning and creative prompt injection, which allowed us to inject all relevant club data with as little as 5,000 tokens.
 
-### What we learned
+## Accomplishments that we're proud of
 
-* **Gemini API usage + Integration:** Successfully bridging a generative AI model with a live web application to provide real-time user value.
-* **Full-Stack Coordination:** Managing three different runtime environments (Vite, Node, and Python) to create a unified user experience.
+We're proud that with just two people, including one first-time hacker, we were able to create a full-stack app, with a real impact, and see it through to the end. We even went past our minimum viable product, and implemented some additional "nice-to-have's."
 
----
+## What we learned
 
-## 🔜 What's Next
+- Gemini API usage + Integration: Learned how to effectively pass structured data to a Large Language Model and handle streaming responses in a React frontend.
+- Web Scraping & Data Pipelines: Gained experience using Python to collect data from the web and parse relevant info into a CSV or JSON format suitable for the application.
+- Full-Stack Architecture: Developed a deeper understanding of how to integrate different service, by bridging a Vite-based frontend with a Node.js server and a Python API.
 
-* **Deployment:** Moving the app from local development to a hosted platform like Vercel and Render.
-* **Advanced Filtering:** Adding filters for membership fees, meeting times, and "low-commitment vs. high-commitment" clubs.
+## What's next for UBC Club Finder
+
+- Deployment: Hosting the application on a platform like Vercel or GCP so that the UBC community can start using it immediately.
+- Enhanced Filtering: Adding more granular search filters (e.g., "Competitive vs. Social," "Membership Fee," or "Meeting Frequency") to supplement the AI assistant.
+- Club Executive Portal: Creating a way for club executives to claim their club’s page and update their own descriptions or event links directly.
