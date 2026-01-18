@@ -82,5 +82,28 @@ def get_random_club_id():
     else:
         return jsonify({"error": "No clubs found"}), 404
 
+@app.route('/api/clubs', methods=['GET'])
+def get_clubs():
+    # 1. Get the page number from the URL (default to page 1)
+    # Using type=int ensures the input is a valid number
+    page = request.args.get('page', 1, type=int)
+    per_page = 50 
+    
+    # 2. Calculate the offset
+    # Page 1 starts at 0, Page 2 starts at 50, etc.
+    offset = (page - 1) * per_page
+
+    conn = get_db_connection()
+    
+    # 3. Query with alphabetical ordering and pagination
+    # We order by 'name' (replace with your actual column name)
+    query = 'SELECT * FROM clubs ORDER BY name ASC LIMIT ? OFFSET ?'
+    clubs = conn.execute(query, (per_page, offset)).fetchall()
+    
+    conn.close()
+
+    # Convert rows to list of dicts for JSON response
+    return jsonify([dict(row) for row in clubs])
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
