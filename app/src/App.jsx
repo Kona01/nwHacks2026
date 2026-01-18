@@ -13,6 +13,7 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: "chat", element: <ChatPage /> },
       { path: "reviews", element: <ReviewsPage />},
+      { path: "clubs/:clubId", element: <ReviewsPage />},
     ],
     errorElement: <ErrorPage />,
   },
