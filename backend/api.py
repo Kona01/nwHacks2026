@@ -105,5 +105,28 @@ def get_clubs():
     # Convert rows to list of dicts for JSON response
     return jsonify([dict(row) for row in clubs])
 
+@app.route('/api/clubs/search', methods=['GET'])
+def search_clubs():
+    # Get the search query from the URL parameters
+    # Example: /api/clubs/search?q=chess
+    search_query = request.args.get('q', '')
+    
+    if not search_query:
+        return jsonify([])
+
+    conn = get_db_connection()
+    
+    # Use the SQL LIKE operator with wildcards (%) 
+    # lower() ensures the search is case-insensitive
+    query = "SELECT * FROM clubs WHERE lower(name) LIKE lower(?) ORDER BY name ASC"
+    
+    # We add % before and after the query so it matches anywhere in the string
+    search_pattern = f"%{search_query}%"
+    
+    clubs = conn.execute(query, (search_pattern,)).fetchall()
+    conn.close()
+
+    return jsonify([dict(row) for row in clubs])
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

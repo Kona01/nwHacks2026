@@ -4,6 +4,7 @@ import ReviewsPage from "./pages/ReviewsPage";
 import HomePage from "./pages/HomePage";
 import RootLayout from "./pages/RootLayout";
 import ErrorPage from "./pages/ErrorPage";
+import SearchPage from "./pages/SearchPage";
 
 const router = createBrowserRouter([
   {
@@ -12,7 +13,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: "chat", element: <ChatPage /> },
-      { path: "reviews", element: <ReviewsPage />},
+      { path: "search", element: <SearchPage />},
       { path: "clubs/:clubId", element: <ReviewsPage />},
     ],
     errorElement: <ErrorPage />,

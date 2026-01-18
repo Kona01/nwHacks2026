@@ -7,13 +7,11 @@ const Navbar = () => {
 
   // Reference Styling: White text with sky-blue (#6EC4E8) hover/active states
   const navLinkStyles = ({ isActive }) =>
-    `text-white text-[1rem] font-medium tracking-wide transition-all duration-300 hover:text-[#6EC4E8] ${
-      isActive ? "text-[#6EC4E8]" : ""
+    `text-white text-[1rem] font-medium tracking-wide transition-all duration-300 hover:text-[#6EC4E8] ${isActive ? "text-[#6EC4E8]" : ""
     }`;
 
   const mobileNavLinkStyles = ({ isActive }) =>
-    `block px-4 py-3 rounded-md text-base font-semibold transition-colors ${
-      isActive ? "bg-[#0055B7] text-[#6EC4E8]" : "text-white hover:bg-[#0055B7]/50"
+    `block px-4 py-3 rounded-md text-base font-semibold transition-colors ${isActive ? "bg-[#0055B7] text-[#6EC4E8]" : "text-white hover:bg-[#0055B7]/50"
     }`;
 
   return (
@@ -30,6 +28,9 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-10">
+            <NavLink title="Search" to="/search" className={navLinkStyles}>
+              Search
+            </NavLink>
             <NavLink title="Home" to="/" className={navLinkStyles}>
               Home
             </NavLink>
@@ -61,10 +62,9 @@ const Navbar = () => {
       </div>
 
       {/* Mobile Menu Content - Styled with the same dark theme */}
-      <div 
-        className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out bg-[#002145] border-t border-white/10 ${
-          isOpen ? "max-h-64 opacity-100" : "max-h-0 opacity-0"
-        }`}
+      <div
+        className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out bg-[#002145] border-t border-white/10 ${isOpen ? "max-h-64 opacity-100" : "max-h-0 opacity-0"
+          }`}
       >
         <div className="px-4 pt-2 pb-6 space-y-2">
           <NavLink
@@ -72,7 +72,7 @@ const Navbar = () => {
             onClick={() => setIsOpen(false)}
             className={mobileNavLinkStyles}
           >
-            Home
+            Test
           </NavLink>
           <NavLink
             to="/chat"
@@ -82,7 +82,7 @@ const Navbar = () => {
             Chat
           </NavLink>
           <div className="pt-2 px-3">
-             <LuckyButton />
+            <LuckyButton />
           </div>
         </div>
       </div>
