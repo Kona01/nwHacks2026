@@ -33,12 +33,9 @@ const Navbar = () => {
             <NavLink title="Chat" to="/chat" className={navLinkStyles}>
               Chat
             </NavLink>
-            <Link 
-              to="/contact" 
-              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-            >
-              Contact
-            </Link>
+            <NavLink title="Reviews" to="/reviews" className={navLinkStyles}>
+              Reviews
+            </NavLink>
           </div>
 
           {/* Mobile Menu Button */}
