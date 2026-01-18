@@ -73,6 +73,38 @@ def get_average_rating(club_id):
         'total_reviews': row['count']
     })
 
+@app.route('/api/clubs/top-rated', methods=['GET'])
+def get_top_rated_clubs():
+    page = request.args.get('page', 1, type=int)
+    per_page = 50
+    offset = (page - 1) * per_page
+    
+    conn = get_db_connection()
+    
+    # Updated r.id to r.review_id and used avg_rating for clarity
+    query = '''
+        SELECT 
+            c.*, 
+            ROUND(AVG(r.rating), 1) as avg_rating, 
+            COUNT(r.review_id) as review_count
+        FROM clubs c
+        LEFT JOIN reviews r ON c.id = r.club_id
+        GROUP BY c.id
+        ORDER BY avg_rating DESC, review_count DESC, c.name ASC
+        LIMIT ? OFFSET ?
+    '''
+    
+    try:
+        top_clubs = conn.execute(query, (per_page, offset)).fetchall()
+        # Convert to list of dicts for JSON
+        results = [dict(row) for row in top_clubs]
+        return jsonify(results)
+    except Exception as e:
+        # Returning a proper JSON error helps debug CORS-masking issues
+        return jsonify({"error": str(e)}), 500
+    finally:
+        conn.close()
+
 # 4. GET 50 Random Clubs
 @app.route('/api/clubs/random', methods=['GET'])
 def get_random_clubs():
