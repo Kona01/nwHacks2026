@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 // --- Inline SVG Icons ---
 const BotIcon = () => (
@@ -60,7 +62,7 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-4rem)] bg-slate-50 font-sans antialiased text-slate-900">      {/* Header */}
+    <div className="flex flex-col h-[calc(100dvh-4rem)] bg-slate-50 font-sans antialiased text-slate-900">
       <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-slate-200 shadow-sm">
         <div className="flex items-center gap-2">
           <div className="p-2 bg-blue-600 text-white rounded-lg"><BotIcon /></div>
@@ -69,16 +71,46 @@ export default function ChatPage() {
       </header>
 
       {/* Message List */}
-      
+
       <main className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
         {messages.map((msg, i) => (
           <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`flex max-w-[85%] md:max-w-[70%] gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+            {/* 1. Added max-w-full and overflow-hidden to the wrapper */}
+            <div className={`flex max-w-[90%] md:max-w-[75%] gap-3 overflow-hidden ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
               <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === 'user' ? 'bg-blue-100 text-blue-600' : 'bg-slate-200 text-slate-600'}`}>
                 {msg.role === 'user' ? <UserIcon /> : <BotIcon />}
               </div>
-              <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm ${msg.role === 'user' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white border border-slate-200 text-slate-800 rounded-tl-none'}`}>
-                {msg.text}
+
+              {/* 2. Added break-words and overflow-hidden to the bubble */}
+              <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm overflow-hidden break-words ${msg.role === 'user'
+                  ? 'bg-blue-600 text-white rounded-tr-none'
+                  : 'bg-white border border-slate-200 text-slate-800 rounded-tl-none'
+                }`}>
+                <div className={`prose prose-sm max-w-none ${msg.role === 'user' ? 'prose-invert text-white' : 'text-slate-800'}`}>
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+                      ul: ({ node, ...props }) => <ul className="list-disc ml-4 mb-2" {...props} />,
+                      ol: ({ node, ...props }) => <ol className="list-decimal ml-4 mb-2" {...props} />,
+                      code: ({ node, inline, className, children, ...props }) => {
+                        return inline ? (
+                          // 3. Added break-all to inline code to prevent line-breaking issues
+                          <code className="bg-slate-100 px-1 rounded text-pink-600 font-mono break-all" {...props}>
+                            {children}
+                          </code>
+                        ) : (
+                          // 4. Ensure block code has horizontal scroll and doesn't push the width
+                          <code className="block bg-slate-800 text-slate-100 p-3 rounded-lg my-2 overflow-x-auto font-mono custom-scrollbar" {...props}>
+                            {children}
+                          </code>
+                        );
+                      }
+                    }}
+                  >
+                    {msg.text}
+                  </ReactMarkdown>
+                </div>
               </div>
             </div>
           </div>
