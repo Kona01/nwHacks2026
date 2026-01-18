@@ -55,6 +55,24 @@ def add_review(club_id):
     finally:
         conn.close()
 
+@app.route('/api/club/<int:club_id>/average-rating', methods=['GET'])
+def get_average_rating(club_id):
+    conn = get_db_connection()
+    # SQL query to get average and count of reviews
+    row = conn.execute(
+        'SELECT ROUND(AVG(rating), 1) as avg_rating, COUNT(*) as count FROM reviews WHERE club_id = ?',
+        (club_id,)
+    ).fetchone()
+    conn.close()
+
+    if row['count'] == 0:
+        return jsonify({'average': 0, 'total_reviews': 0})
+
+    return jsonify({
+        'average': row['avg_rating'],
+        'total_reviews': row['count']
+    })
+
 # 4. GET 50 Random Clubs
 @app.route('/api/clubs/random', methods=['GET'])
 def get_random_clubs():

@@ -1,35 +1,60 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import InstagramButton from '../components/InstagramButton';
 
 const ReviewsPage = () => {
+  // UI State
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [loading, setLoading] = useState(true);
+  
+  // Data State
+  const [club, setClub] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [avgRating, setAvgRating] = useState(0);
+  
+  // Form State
   const [reviewText, setReviewText] = useState("");
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
-  const [showToast, setShowToast] = useState(false);
-  const [club, setClub] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [reviews, setReviews] = useState([]);
 
   const { clubId } = useParams();
 
+  // Helper to fetch both reviews and the average score
+  const refreshReviewData = useCallback(async () => {
+    try {
+      const [reviewsRes, avgRes] = await Promise.all([
+        fetch(`http://localhost:5000/api/club/${clubId}/reviews`),
+        fetch(`http://localhost:5000/api/club/${clubId}/average-rating`)
+      ]);
+      
+      const reviewsData = await reviewsRes.json();
+      const avgData = await avgRes.json();
+      
+      setReviews(reviewsData);
+      setAvgRating(avgData.average);
+    } catch (err) {
+      console.error("Error refreshing review data:", err);
+    }
+  }, [clubId]);
+
+  // Initial Data Load
   useEffect(() => {
-    fetch(`http://localhost:5000/api/club/${clubId}`)
-      .then(response => response.json())
-      .then(data => {
+    const fetchClub = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/club/${clubId}`);
+        const data = await response.json();
         setClub(data);
+        await refreshReviewData();
         setLoading(false);
-      })
-      .catch(err => console.error("Error fetching club:", err));
-  }, [clubId]);
+      } catch (err) {
+        console.error("Error fetching club:", err);
+      }
+    };
+    fetchClub();
+  }, [clubId, refreshReviewData]);
 
-  useEffect(() => {
-    fetch(`http://localhost:5000/api/club/${clubId}/reviews`)
-      .then(res => res.json())
-      .then(data => setReviews(data));
-  }, [clubId]);
-
+  // Toast Auto-hide
   useEffect(() => {
     if (showToast) {
       const timer = setTimeout(() => setShowToast(false), 3000);
@@ -50,8 +75,8 @@ const ReviewsPage = () => {
       setIsModalOpen(false);
       setReviewText("");
       setRating(0);
-      const updatedReviews = await fetch(`http://localhost:5000/api/club/${clubId}/reviews`).then(res => res.json());
-      setReviews(updatedReviews);
+      // Refresh data to show the new review and updated average
+      await refreshReviewData();
     }
   };
 
@@ -66,7 +91,6 @@ const ReviewsPage = () => {
       background: 'linear-gradient(135deg, #002145 0%, #0055B7 100%)',
     }}>
       
-      {/* Toast Notification */}
       {showToast && (
         <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] animate-bounce">
           <div className="bg-[#6EC4E8] text-[#002145] px-6 py-3 rounded-full shadow-2xl flex items-center gap-2 font-bold">
@@ -84,12 +108,30 @@ const ReviewsPage = () => {
                 className="w-32 h-32 rounded-full object-contain bg-white p-2"
             />
         </div>
-        <h1 className="text-4xl font-bold mb-3 drop-shadow-md">{club.name}</h1>
+        <h1 className="text-4xl font-bold mb-2 drop-shadow-md">{club.name}</h1>
+        
+        {/* NEW: Average Rating Display */}
+        <div className="flex flex-col items-center mb-4">
+            <div className="flex items-center gap-3">
+                <div className="flex gap-1">
+                    {[...Array(5)].map((_, i) => (
+                        <span key={i} className={`text-2xl ${i < Math.round(avgRating) ? "text-[#6EC4E8]" : "text-white/20"}`}>
+                            ★
+                        </span>
+                    ))}
+                </div>
+                <span className="text-2xl font-bold text-white">{avgRating > 0 ? avgRating : "0.0"}</span>
+            </div>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-[#6EC4E8] font-bold mt-1 opacity-80">
+                Community Rating
+            </p>
+        </div>
+
         <InstagramButton
           handle={club.instagram_handle} 
           url={club.instagram_url} 
         />
-        <p className="text-[#E0E0E0] max-w-2xl mx-auto font-light leading-relaxed">
+        <p className="text-[#E0E0E0] max-w-2xl mx-auto font-light leading-relaxed mt-4">
             {club.description || "A featured organization at the University of British Columbia."}
         </p>
         
@@ -124,7 +166,7 @@ const ReviewsPage = () => {
                     {new Date(rev.date_created).toLocaleDateString()}
                   </span>
                 </div>
-                <p className="text-gray-100 leading-relaxed italic">"{rev.comment || rev.text}"</p>
+                <p className="text-gray-100 leading-relaxed italic">"{rev.comment}"</p>
               </div>
             ))
           ) : (
@@ -135,10 +177,10 @@ const ReviewsPage = () => {
         </div>
       </div>
 
-      {/* Modal - Themed to match */}
+      {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-[#002145]/80 backdrop-blur-sm flex items-center justify-center p-4 z-[200]">
-          <div className="bg-white rounded-3xl w-full max-w-md p-8 shadow-2xl transform transition-all">
+          <div className="bg-white rounded-3xl w-full max-w-md p-8 shadow-2xl">
             <h2 className="text-2xl font-bold text-[#002145] mb-1">Rate your experience</h2>
             <p className="text-gray-500 mb-6 text-sm">How was your time with {club.name}?</p>
             
